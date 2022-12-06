@@ -8,6 +8,14 @@ By attaching to the Telemetry events Phoenix LiveView emits we are able to const
 
 TimeTravel was inspired by [Elm Reactor](https://elm-lang.org/news/time-travel-made-easy) and the [rr-project](https://rr-project.org/)
 
+## Demo
+
+See the [Time Travel Demo Repo](https://github.com/JohnnyCurran/TimeTravelDemo) for a working example
+
+See a short example video here:
+
+https://user-images.githubusercontent.com/18315178/206040925-139688e9-991c-4b17-9c7a-dafc3031cf9d.mov
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
