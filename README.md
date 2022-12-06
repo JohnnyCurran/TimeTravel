@@ -24,7 +24,7 @@ by adding `time_travel` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:time_travel, "~> 0.1.0"}
+    {:time_travel, "~> 0.1.0", only: :dev}
   ]
 end
 ```
