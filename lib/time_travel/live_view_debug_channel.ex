@@ -9,15 +9,8 @@ defmodule TimeTravel.LiveViewDebugChannel do
 
   def handle_in("restore-assigns", params, socket) do
     %{"socketId" => socket_id, "time" => time_key} = params
-    # time_key = String.to_integer(time_key_string)
-    IO.inspect(time_key, label: "Time Key!")
-    IO.inspect(socket_id, label: "Socket ID!")
-    endpoint = Application.get_env(:time_travel, :endpoint)
     pubsub = Application.get_env(:time_travel, :pubsub)
     assigns = GenServer.call(TimeTravel.Jumper, {:get, socket_id, time_key})
-    IO.inspect endpoint
-    IO.inspect pubsub
-    IO.inspect "!!!!!"
     Phoenix.PubSub.broadcast(pubsub, "time_travel", {:time_travel, socket_id, assigns})
     {:noreply, socket}
   end
