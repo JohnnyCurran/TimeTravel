@@ -42,7 +42,8 @@ defmodule TimeTravel.MixProject do
     [
       {:phoenix, "~> 1.6"},
       {:ecto, "~> 3.8"},
-      {:jason, "~> 1.0"}
+      {:jason, "~> 1.0"},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 end
