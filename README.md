@@ -108,9 +108,4 @@ def handle_info({:time_travel, _socket_id, _assigns}, params, socket) do
 end
 ```
 
-For a full example see the [Time Travel Demo Repo]()
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/time_travel>.
-
+For a full example see the [Time Travel Demo Repo](https://github.com/JohnnyCurran/TimeTravelDemo)
