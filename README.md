@@ -75,7 +75,7 @@ config :time_travel,
 ```
 
 6. Attach to the telemetry handlers in the init callback in `lib/your_app_web/telemetry.ex`:
-```
+```elixir
 # telemetry.ex
 # init callback
 :ok =
@@ -93,7 +93,7 @@ config :time_travel,
 
 
 7. Finally, subscribe to and handle the callbacks on the LiveView you want to debug:
-```
+```elixir
 # page_live.ex
 def mount(params, session, socket) do
   if connected?(socket) do
