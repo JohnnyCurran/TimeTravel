@@ -1,9 +1,11 @@
 defmodule TimeTravel.LiveViewDebugChannel do
   use Phoenix.Channel
 
+  require Logger
+
   def join("lvdbg:" <> liveview_socket_id, _payload, socket) do
     # LV Socket ID can be gotten off of the DOM when we're creating the debug channel
-    IO.inspect("Joining LV Dbg Channel for ID #{liveview_socket_id}")
+    Logger.info("Joining LV Dbg Channel for socket ID #{liveview_socket_id}")
     {:ok, socket}
   end
 

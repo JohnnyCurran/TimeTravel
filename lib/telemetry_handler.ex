@@ -20,7 +20,7 @@ defmodule TimeTravel.TelemetryHandler do
     # Store original assigns in our server
     GenServer.cast(
       TimeTravel.Jumper,
-      {:set, metadata.socket.id, time_key, metadata.socket.assigns}
+      {:set, metadata.socket.id, time_key, Map.delete(metadata.socket.assigns, :flash)}
     )
 
     endpoint = Application.get_env(:time_travel, :endpoint)
