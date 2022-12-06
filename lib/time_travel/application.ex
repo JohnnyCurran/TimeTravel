@@ -8,6 +8,7 @@ defmodule TimeTravel.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      TimeTravel.Jumper
       # Starts a worker by calling: TimeTravel.Worker.start_link(arg)
       # {TimeTravel.Worker, arg}
     ]
