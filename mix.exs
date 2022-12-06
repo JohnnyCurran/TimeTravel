@@ -1,11 +1,16 @@
 defmodule TimeTravel.MixProject do
   use Mix.Project
 
+  @source_url "https://github.com/JohnnyCurran/TimeTravel"
+
   def project do
     [
       app: :time_travel,
       version: "0.1.0",
       elixir: "~> 1.11",
+      description: description(),
+      package: package(),
+      source_url: @source_url,
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
@@ -16,6 +21,19 @@ defmodule TimeTravel.MixProject do
     [
       extra_applications: [:logger],
       mod: {TimeTravel.Application, []}
+    ]
+  end
+
+  defp description do
+  """
+  LiveView TimeTravel debugger allows you to record and replay your LiveView's lifecycle as you interact with the page
+  """
+  end
+
+  defp package do
+    [
+      licenses: ["MIT"],
+      links: %{"GitHub" => @source_url}
     ]
   end
 
