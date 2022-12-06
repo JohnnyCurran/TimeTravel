@@ -1,5 +1,5 @@
 defmodule TimeTravel.TelemetryHandler do
-  def live_view_event_handler(name, measurement, metadata, context, endpoint) do
+  def live_view_event_handler(name, measurement, metadata, context) do
     event_name =
       name
       |> Enum.map(&to_string/1)
@@ -22,6 +22,9 @@ defmodule TimeTravel.TelemetryHandler do
       TimeTravel.Jumper,
       {:set, metadata.socket.id, time_key, metadata.socket.assigns}
     )
+
+    endpoint = Application.get_env(:time_travel, :endpoint)
+    IO.inspect endpoint, label: "Here's the endpoint"
 
     # Send clean assigns to be inspected through the socket
     endpoint.broadcast("lvdbg:#{metadata.socket.id}", "lv_event", %{
