@@ -24,7 +24,6 @@ defmodule TimeTravel.TelemetryHandler do
     )
 
     endpoint = Application.get_env(:time_travel, :endpoint)
-    IO.inspect endpoint, label: "Here's the endpoint"
 
     # Send clean assigns to be inspected through the socket
     endpoint.broadcast("lvdbg:#{metadata.socket.id}", "lv_event", %{
