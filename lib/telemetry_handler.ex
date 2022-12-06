@@ -60,7 +60,7 @@ defmodule TimeTravel.TelemetryHandler do
         Map.put(acc, key, safe_assigns(value))
 
       {key, value}, acc when is_list(value) ->
-        Map.put(acc, key, safe_assigns(value))
+        Map.put(acc, key, Enum.map(value, &safe_assign/1))
 
       {key, value}, acc when is_tuple(value) ->
         Map.put(acc, key, safe_assigns(Tuple.to_list(value)))
@@ -93,7 +93,24 @@ defmodule TimeTravel.TelemetryHandler do
         acc
 
       v, _acc ->
+        IO.inspect v, label: "Got the blank handler"
         v
     end)
   end
+
+  # This is for when we have a list of something
+  def safe_assign(%DateTime{} = v), do: DateTime.to_iso8601(v)
+  def safe_assign(%Date{} = v), do: Date.to_iso8601(v)
+  def safe_assign(v) when is_function(v), do: inspect(v)
+  def safe_assign(v) when is_map(v), do: safe_assigns(v)
+  def safe_assign(v) when is_tuple(v), do: v |> Tuple.to_list() |> safe_assigns()
+  def safe_assign(v) when is_pid(v), do: inspect(v)
+  def safe_assign(v) when is_struct(v) do
+    v
+    |> Map.delete(:__meta__)
+    |> Map.from_struct()
+  end
+
+  def safe_assign(v), do: v
+
 end
