@@ -93,7 +93,7 @@ defmodule TimeTravel.TelemetryHandler do
         acc
 
       v, _acc ->
-        IO.inspect v, label: "Got the blank handler"
+        IO.inspect(v, label: "Got the blank handler")
         v
     end)
   end
@@ -105,6 +105,7 @@ defmodule TimeTravel.TelemetryHandler do
   def safe_assign(v) when is_map(v), do: safe_assigns(v)
   def safe_assign(v) when is_tuple(v), do: v |> Tuple.to_list() |> safe_assigns()
   def safe_assign(v) when is_pid(v), do: inspect(v)
+
   def safe_assign(v) when is_struct(v) do
     v
     |> Map.delete(:__meta__)
@@ -112,5 +113,4 @@ defmodule TimeTravel.TelemetryHandler do
   end
 
   def safe_assign(v), do: v
-
 end

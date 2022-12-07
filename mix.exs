@@ -25,9 +25,9 @@ defmodule TimeTravel.MixProject do
   end
 
   defp description do
-  """
-  LiveView TimeTravel debugger allows you to record and replay your LiveView's lifecycle as you interact with the page
-  """
+    """
+    LiveView TimeTravel debugger allows you to record and replay your LiveView's lifecycle as you interact with the page
+    """
   end
 
   defp package do

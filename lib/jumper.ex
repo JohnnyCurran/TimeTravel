@@ -28,7 +28,11 @@ defmodule TimeTravel.Jumper do
     {:noreply, %{}}
   end
 
-  def show() do
+  def show do
     GenServer.call(TimeTravel.Jumper, :show_state)
+  end
+
+  def reset do
+    GenServer.cast(TimeTravel.Jumper, :reset)
   end
 end
