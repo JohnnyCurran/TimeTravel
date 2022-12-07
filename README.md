@@ -117,3 +117,12 @@ end
 ```
 
 For a full example see the [Time Travel Demo Repo](https://github.com/JohnnyCurran/TimeTravelDemo)
+
+## Usage
+1. With the LiveView open, Right click > Inspect
+2. Press the arrows >> for more options and select LiveView DevTools
+3. Interact with your LiveView (LiveComponents not supported at this time)
+4. Drag the slider back and forth to replace the socket assigns
+
+### Notes
+- If you run out of chrome storage, press the "Clear Storage" button (The Extension & Library is memory-heavy at this time)
