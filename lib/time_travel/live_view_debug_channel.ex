@@ -10,9 +10,9 @@ defmodule TimeTravel.LiveViewDebugChannel do
   end
 
   def handle_in("restore-assigns", params, socket) do
-    %{"socketId" => socket_id, "time" => time_key} = params
+    %{"jumperKey" => assigns_key, "socketId" => socket_id, "time" => time_key} = params
+    assigns = GenServer.call(TimeTravel.Jumper, {:get, assigns_key, time_key})
     pubsub = Application.get_env(:time_travel, :pubsub)
-    assigns = GenServer.call(TimeTravel.Jumper, {:get, socket_id, time_key})
     Phoenix.PubSub.broadcast(pubsub, "time_travel", {:time_travel, socket_id, assigns})
     {:noreply, socket}
   end

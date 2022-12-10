@@ -29,7 +29,8 @@ defmodule TimeTravel.TelemetryHandler do
     endpoint.broadcast("lvdbg:#{metadata.socket.id}", "lv_event", %{
       payload: clean_assigns,
       time: time,
-      name: event_name
+      event_name: event_name,
+      socket_id: metadata.socket.id
     })
   end
 
