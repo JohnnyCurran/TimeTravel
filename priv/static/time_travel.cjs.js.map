@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../assets/js/time_travel/index.js", "../../assets/js/time_travel/time_travel.js"],
+  "sourcesContent": ["import TimeTravel from \"./time_travel\"\nexport {\n  TimeTravel\n}\n", "export default class TimeTravel {\n  constructor() {\n  }\n\n  isEnabled() {\n    console.log('Enabled');\n    return true;\n  }\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;;;ACAA,IAAqB,aAArB,MAAgC;AAAA,EAC9B,cAAc;AAAA,EACd;AAAA,EAEA,YAAY;AACV,YAAQ,IAAI,SAAS;AACrB,WAAO;AAAA,EACT;AACF;",
+  "names": []
+}

@@ -51,7 +51,8 @@ defmodule TimeTravel.MixProject do
 
   defp aliases do
     [
-      "assets.build": ["esbuild module", "esbuild cdn", "esbuild cdn_min", "esbuild main"]
+      "assets.build": ["esbuild module", "esbuild cdn", "esbuild cdn_min", "esbuild main"],
+      "assets.watch": ["esbuild module --watch"]
     ]
   end
 end

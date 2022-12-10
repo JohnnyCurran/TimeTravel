@@ -1,0 +1,26 @@
+{
+  "name": "time_travel",
+  "version": "0.1",
+  "description": "The Time Travel JavaScript client.",
+  "license": "MIT",
+  "module": "./priv/static/time_travel.esm.js",
+  "main": "./priv/static/time_travel.cjs.js",
+  "unpkg": "./priv/static/time_travel.min.js",
+  "jsdelivr": "./priv/static/time_travel.min.js",
+  "exports": {
+    "import": "./priv/static/time_travel.esm.js",
+    "require": "./priv/static/time_travel.cjs.js"
+  },
+  "author": "John Curran <jcurran996@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/JohnnyCurran/TimeTravel.git"
+  },
+  "files": [
+    "README.md",
+    "LICENSE.md",
+    "package.json",
+    "priv/static/*",
+    "assets/js/time_travel/*"
+  ]
+}
