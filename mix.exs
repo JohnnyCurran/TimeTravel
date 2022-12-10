@@ -12,7 +12,8 @@ defmodule TimeTravel.MixProject do
       package: package(),
       source_url: @source_url,
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: aliases()
     ]
   end
 
@@ -45,6 +46,12 @@ defmodule TimeTravel.MixProject do
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:jason, "~> 1.0"},
       {:phoenix, "~> 1.6"}
+    ]
+  end
+
+  defp aliases do
+    [
+      "assets.build": ["esbuild module", "esbuild cdn", "esbuild cdn_min", "esbuild main"]
     ]
   end
 end
