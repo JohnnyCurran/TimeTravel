@@ -1,6 +1,7 @@
 export default class TimeTravel {
   // Socket is {Socket} from "phoenix"
-  constructor(Socket, socketId) {
+  constructor(Socket) {
+    let socketId = document.querySelector('div[data-phx-main]').getAttribute("id");
     let timeTravelSocket = new Socket("/socket")
     timeTravelSocket.connect();
     let channel = timeTravelSocket.channel('lvdbg:' + socketId);
@@ -14,20 +15,11 @@ export default class TimeTravel {
     });
 
     window.addEventListener('RestoreAssigns', e => {
-      console.log('restore', e);
       channel.push("restore-assigns", {...e.detail, socketId: socketId});
     });
 
     window.addEventListener('ClearAssigns', _e => {
-      console.log('clear');
       channel.push("clear-assigns", {});
     });
-  }
-
-  isEnabled() {
-    console.log('Enabled');
-    console.log(window);
-    window.dispatchEvent(new CustomEvent('TimeTravelEvent', {detail: {}}));
-    return true;
   }
 }

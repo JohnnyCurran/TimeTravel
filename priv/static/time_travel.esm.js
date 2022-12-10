@@ -1,6 +1,7 @@
 // js/time_travel/time_travel.js
 var TimeTravel = class {
-  constructor(Socket, socketId) {
+  constructor(Socket) {
+    let socketId = document.querySelector("div[data-phx-main]").getAttribute("id");
     let timeTravelSocket = new Socket("/socket");
     timeTravelSocket.connect();
     let channel = timeTravelSocket.channel("lvdbg:" + socketId);
@@ -9,19 +10,11 @@ var TimeTravel = class {
       window.dispatchEvent(new CustomEvent("SaveAssigns", { detail: payload }));
     });
     window.addEventListener("RestoreAssigns", (e) => {
-      console.log("restore", e);
       channel.push("restore-assigns", { ...e.detail, socketId });
     });
     window.addEventListener("ClearAssigns", (_e) => {
-      console.log("clear");
       channel.push("clear-assigns", {});
     });
-  }
-  isEnabled() {
-    console.log("Enabled");
-    console.log(window);
-    window.dispatchEvent(new CustomEvent("TimeTravelEvent", { detail: {} }));
-    return true;
   }
 };
 export {
