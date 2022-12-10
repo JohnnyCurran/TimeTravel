@@ -24,7 +24,7 @@ defmodule TimeTravel.Jumper do
     {:noreply, put_in(state, [Access.key(socket_id, %{}), Access.key(key, %{})], assigns)}
   end
 
-  def handle_cast(:reset, _state) do
+  def handle_cast(:clear, _state) do
     {:noreply, %{}}
   end
 
@@ -32,7 +32,7 @@ defmodule TimeTravel.Jumper do
     GenServer.call(TimeTravel.Jumper, :show_state)
   end
 
-  def reset do
-    GenServer.cast(TimeTravel.Jumper, :reset)
+  def clear do
+    GenServer.cast(TimeTravel.Jumper, :clear)
   end
 end

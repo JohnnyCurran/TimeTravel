@@ -16,4 +16,9 @@ defmodule TimeTravel.LiveViewDebugChannel do
     Phoenix.PubSub.broadcast(pubsub, "time_travel", {:time_travel, socket_id, assigns})
     {:noreply, socket}
   end
+
+  def handle_in("clear-assigns", _params, socket) do
+    TimeTravel.Jumper.clear()
+    {:noreply, socket}
+  end
 end
