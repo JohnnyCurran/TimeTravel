@@ -30,7 +30,9 @@ end
 
 ### Steps
 1. Download and install the [Chrome Extension](https://github.com/JohnnyCurran/LiveViewTimeTravelExtension)
+
 2. Add `:time_travel` as an Elixir dependency in `mix.exs` (see above)
+
 3. (If you have already set up Phoenix Channels) Add the `lvdbg` channel specification in `your_app_web/channels/user_socket.ex`:
 ```elixir
 ## Channels
@@ -43,6 +45,7 @@ channel "lvdbg:*", TimeTravel.LiveViewDebugChannel
     websocket: true,
     longpoll: false
   ```
+
 4. Import time travel and declare the socket in `app.js` (before you declare the liveSocket):
 ```js
 import {TimeTravel} from "time_travel"
@@ -51,6 +54,7 @@ let timeTravel = new TimeTravel(Socket);
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
 ```
+
 5. Configure TimeTravel to use your Endpoint `config/config.exs`:
 ```elixir
 # config/config.exs
@@ -74,16 +78,19 @@ config :time_travel, endpoint: MyAppWeb.Endpoint,
   )
 ```
 
-
 7. Finally, `use TimeTravel` in the `live_view` definition in `my_app_web.ex`:
 ```elixir
-  def live_view do
-    quote do
-      use Phoenix.LiveView,
-        layout: {TimeTravelDemoWeb.LayoutView, "live.html"}
+def live_view do
+  quote do
+    use Phoenix.LiveView,
+      layout: {TimeTravelDemoWeb.LayoutView, "live.html"}
 
-      # Import TimeTravel handle_cast callbacks for each LiveView
-      use TimeTravel
+    # Import TimeTravel handle_cast callbacks for each LiveView
+    use TimeTravel
+
+    # ...
+  end
+end
 ```
 
 For a full example see the [Time Travel Demo Repo](https://github.com/JohnnyCurran/TimeTravelDemo)
