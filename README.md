@@ -39,7 +39,7 @@ end
 channel "lvdbg:*", TimeTravel.LiveViewDebugChannel
 ```
   - If you have not set up a Phoenix socket, run `mix phx.gen.socket User`
-  - Make sure you have a socket configuration set up in `lib_your_app_web/endpoint.ex`:
+  - Make sure you have a socket configuration set up in `lib/your_app_web/endpoint.ex`:
   ```elixir
   socket "/socket", YourAppWeb.UserSocket,
     websocket: true,
