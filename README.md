@@ -18,13 +18,12 @@ https://user-images.githubusercontent.com/18315178/206040925-139688e9-991c-4b17-
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `time_travel` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `time_travel` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:time_travel, "~> 0.1.0", only: :dev}
+    {:time_travel, "~> 0.2", only: :dev}
   ]
 end
 ```
@@ -44,34 +43,18 @@ channel "lvdbg:*", TimeTravel.LiveViewDebugChannel
     websocket: true,
     longpoll: false
   ```
-4. Create the channel in `app.js` (before you declare the liveSocket):
+4. Import time travel and declare the socket in `app.js` (before you declare the liveSocket):
 ```js
-let socketId = document.querySelector('div[data-phx-main]').getAttribute("id");
-let timeTravelSocket = new Socket("/socket")
-timeTravelSocket.connect();
-let channel = timeTravelSocket.channel('lvdbg:' + socketId);
-channel.join()
-  .receive("ok", ({messages}) => console.log("catching up", messages) )
-  .receive("error", ({reason}) => console.log("failed join", reason) )
-  .receive("timeout", () => console.log("Networking issue. Still waiting..."))
-
-channel.on("lv_event", payload => {
-  window.dispatchEvent(new CustomEvent('SaveAssigns', {detail: payload}));
-});
-
-window.addEventListener('RestoreAssigns', e => {
-  channel.push("restore-assigns", {...e.detail, socketId: socketId});
-});
+import {TimeTravel} from "time_travel"
+let timeTravel = new TimeTravel(Socket);
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
 ```
-5. Set your Endpoint and PubSub modules in `config/config.exs`:
+5. Configure TimeTravel to use your Endpoint `config/config.exs`:
 ```elixir
 # config/config.exs
-config :time_travel,
-  endpoint: MyAppWeb.Endpoint,
-  pubsub: MyAppWeb.PubSub
+config :time_travel, endpoint: MyAppWeb.Endpoint,
 ```
 
 6. Attach to the telemetry handlers in the init callback in `lib/your_app_web/telemetry.ex`:
@@ -92,28 +75,15 @@ config :time_travel,
 ```
 
 
-7. Finally, subscribe to and handle the callbacks on the LiveView you want to debug:
+7. Finally, `use TimeTravel` in the `live_view` definition in `my_app_web.ex`:
 ```elixir
-# page_live.ex
-def mount(params, session, socket) do
-  if connected?(socket) do
-    Phoenix.PubSub.subscribe(MyAppWeb.PubSub, "time_travel")
-  end
+  def live_view do
+    quote do
+      use Phoenix.LiveView,
+        layout: {TimeTravelDemoWeb.LayoutView, "live.html"}
 
-  {:ok, socket}
-end
-
-def handle_info({:time_travel, _socket_id, nil}, socket) do
-  {:noreply, socket}
-end
-
-def handle_info({:time_travel, socket_id, assigns}, %{id: id} = socket) when id == socket_id do
-  {:noreply, assign(socket, assigns)}
-end
-
-def handle_info({:time_travel, _socket_id, _assigns}, params, socket) do
-  {:noreply, socket}
-end
+      # Import TimeTravel handle_cast callbacks for each LiveView
+      use TimeTravel
 ```
 
 For a full example see the [Time Travel Demo Repo](https://github.com/JohnnyCurran/TimeTravelDemo)
