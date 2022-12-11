@@ -23,7 +23,7 @@ The package can be installed by adding `time_travel` to your list of dependencie
 ```elixir
 def deps do
   [
-    {:time_travel, "~> 0.2", only: :dev}
+    {:time_travel, "~> 0.2"}
   ]
 end
 ```
