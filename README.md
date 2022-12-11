@@ -58,7 +58,7 @@ let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToke
 5. Configure TimeTravel to use your Endpoint `config/config.exs`:
 ```elixir
 # config/config.exs
-config :time_travel, endpoint: MyAppWeb.Endpoint,
+config :time_travel, endpoint: MyAppWeb.Endpoint
 ```
 
 6. Attach to the telemetry handlers in the init callback in `lib/your_app_web/telemetry.ex`:
