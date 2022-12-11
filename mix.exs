@@ -34,7 +34,10 @@ defmodule TimeTravel.MixProject do
   defp package do
     [
       licenses: ["MIT"],
-      links: %{"GitHub" => @source_url}
+      links: %{"GitHub" => @source_url},
+      files:
+        ~w(assets/js lib priv) ++
+          ~w(CHANGELOG.md LICENSE mix.exs package.json README.md .formatter.exs)
     ]
   end
 
