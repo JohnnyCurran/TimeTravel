@@ -14,64 +14,51 @@ See the [Time Travel Demo Repo](https://github.com/JohnnyCurran/TimeTravelDemo) 
 
 See a short example video here:
 
-https://user-images.githubusercontent.com/18315178/206040925-139688e9-991c-4b17-9c7a-dafc3031cf9d.mov
+https://user-images.githubusercontent.com/18315178/206929183-2ce45dca-665a-4a3e-bb36-d0862dc0d4c3.mov
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `time_travel` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `time_travel` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:time_travel, "~> 0.1.0", only: :dev}
+    {:time_travel, "~> 0.2", only: :dev}
   ]
 end
 ```
 
 ### Steps
 1. Download and install the [Chrome Extension](https://github.com/JohnnyCurran/LiveViewTimeTravelExtension)
+
 2. Add `:time_travel` as an Elixir dependency in `mix.exs` (see above)
+
 3. (If you have already set up Phoenix Channels) Add the `lvdbg` channel specification in `your_app_web/channels/user_socket.ex`:
 ```elixir
 ## Channels
 channel "lvdbg:*", TimeTravel.LiveViewDebugChannel
 ```
   - If you have not set up a Phoenix socket, run `mix phx.gen.socket User`
-  - Make sure you have a socket configuration set up in `lib_your_app_web/endpoint.ex`:
+  - Make sure you have a socket configuration set up in `lib/your_app_web/endpoint.ex`:
   ```elixir
   socket "/socket", YourAppWeb.UserSocket,
     websocket: true,
     longpoll: false
   ```
-4. Create the channel in `app.js` (before you declare the liveSocket):
+
+4. Import time travel and declare the socket in `app.js` (before you declare the liveSocket):
 ```js
-let socketId = document.querySelector('div[data-phx-main]').getAttribute("id");
-let timeTravelSocket = new Socket("/socket")
-timeTravelSocket.connect();
-let channel = timeTravelSocket.channel('lvdbg:' + socketId);
-channel.join()
-  .receive("ok", ({messages}) => console.log("catching up", messages) )
-  .receive("error", ({reason}) => console.log("failed join", reason) )
-  .receive("timeout", () => console.log("Networking issue. Still waiting..."))
-
-channel.on("lv_event", payload => {
-  window.dispatchEvent(new CustomEvent('SaveAssigns', {detail: payload}));
-});
-
-window.addEventListener('RestoreAssigns', e => {
-  channel.push("restore-assigns", {...e.detail, socketId: socketId});
-});
+import {TimeTravel} from "time_travel"
+let timeTravel = new TimeTravel(Socket);
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
 ```
-5. Set your Endpoint and PubSub modules in `config/config.exs`:
+
+5. Configure TimeTravel to use your Endpoint `config/config.exs`:
 ```elixir
 # config/config.exs
-config :time_travel,
-  endpoint: MyAppWeb.Endpoint,
-  pubsub: MyAppWeb.PubSub
+config :time_travel, endpoint: MyAppWeb.Endpoint
 ```
 
 6. Attach to the telemetry handlers in the init callback in `lib/your_app_web/telemetry.ex`:
@@ -91,28 +78,18 @@ config :time_travel,
   )
 ```
 
-
-7. Finally, subscribe to and handle the callbacks on the LiveView you want to debug:
+7. Finally, `use TimeTravel` in the `live_view` definition in `my_app_web.ex`:
 ```elixir
-# page_live.ex
-def mount(params, session, socket) do
-  if connected?(socket) do
-    Phoenix.PubSub.subscribe(MyAppWeb.PubSub, "time_travel")
+def live_view do
+  quote do
+    use Phoenix.LiveView,
+      layout: {TimeTravelDemoWeb.LayoutView, "live.html"}
+
+    # Import TimeTravel handle_cast callbacks for each LiveView
+    use TimeTravel
+
+    # ...
   end
-
-  {:ok, socket}
-end
-
-def handle_info({:time_travel, _socket_id, nil}, socket) do
-  {:noreply, socket}
-end
-
-def handle_info({:time_travel, socket_id, assigns}, %{id: id} = socket) when id == socket_id do
-  {:noreply, assign(socket, assigns)}
-end
-
-def handle_info({:time_travel, _socket_id, _assigns}, params, socket) do
-  {:noreply, socket}
 end
 ```
 
