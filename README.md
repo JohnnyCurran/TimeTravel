@@ -48,6 +48,7 @@ channel "lvdbg:*", TimeTravel.LiveViewDebugChannel
 
 4. Import time travel and declare the socket in `app.js` (before you declare the liveSocket):
 ```js
+import {Socket} from "phoenix"
 import {TimeTravel} from "time_travel"
 let timeTravel = new TimeTravel(Socket);
 
