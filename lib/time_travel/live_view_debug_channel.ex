@@ -12,13 +12,31 @@ defmodule TimeTravel.LiveViewDebugChannel do
   def handle_in("restore-assigns", params, socket) do
     %{"jumperKey" => assigns_key, "socketId" => socket_id, "time" => time_key} = params
     assigns = GenServer.call(TimeTravel.Jumper, {:get, assigns_key, time_key})
-    pubsub = Application.get_env(:time_travel, :pubsub)
-    Phoenix.PubSub.broadcast(pubsub, "time_travel", {:time_travel, socket_id, assigns})
+    Enum.each(live_list(), &GenServer.cast(&1, {:time_travel, socket_id, assigns}))
     {:noreply, socket}
   end
 
   def handle_in("clear-assigns", _params, socket) do
     TimeTravel.Jumper.clear()
     {:noreply, socket}
+  end
+
+  # Returns a list of current LiveView pids
+  defp live_list do
+    Process.list()
+    |> Enum.map(
+      &{
+        &1,
+        Process.info(&1, [:dictionary])
+        |> hd()
+        |> elem(1)
+        |> Keyword.get(:"$initial_call", {})
+      }
+    )
+    |> Enum.filter(fn {_, process} ->
+      process != nil && process != {} &&
+        elem(process, 0) == Phoenix.LiveView.Channel
+    end)
+    |> Enum.map(&elem(&1, 0))
   end
 end
