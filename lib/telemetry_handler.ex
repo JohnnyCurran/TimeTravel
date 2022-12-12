@@ -23,11 +23,12 @@ defmodule TimeTravel.TelemetryHandler do
       {:set, metadata.socket.id, time_key, Map.delete(metadata.socket.assigns, :flash)}
     )
 
-    event_args =
+    {:ok, event_args} =
       name
       |> Enum.at(2)
       |> event_args(metadata)
       |> safe_assigns()
+      |> Jason.encode()
 
     endpoint = Application.get_env(:time_travel, :endpoint)
 
