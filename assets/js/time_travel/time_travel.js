@@ -10,7 +10,8 @@ export default class TimeTravel {
       .receive("error", ({reason}) => console.log("failed join", reason) )
       .receive("timeout", () => console.log("Networking issue. Still waiting..."))
 
-    channel.on("lv_event", payload => {
+    channel.on('SaveAssigns', payload => {
+      console.log('SaveAssigns', payload);
       window.dispatchEvent(new CustomEvent('SaveAssigns', {detail: payload}));
     });
 

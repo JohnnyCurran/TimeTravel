@@ -23,16 +23,27 @@ defmodule TimeTravel.TelemetryHandler do
       {:set, metadata.socket.id, time_key, Map.delete(metadata.socket.assigns, :flash)}
     )
 
+    event_args =
+      name
+      |> Enum.at(2)
+      |> event_args(metadata)
+      |> safe_assigns()
+
     endpoint = Application.get_env(:time_travel, :endpoint)
 
     # Send clean assigns to be inspected through the socket
-    endpoint.broadcast("lvdbg:#{metadata.socket.id}", "lv_event", %{
+    endpoint.broadcast("lvdbg:#{metadata.socket.id}", "SaveAssigns", %{
       payload: clean_assigns,
       time: time,
       event_name: event_name,
+      event_args: event_args,
       socket_id: metadata.socket.id
     })
   end
+
+  defp event_args(:mount, metadata), do: Map.take(metadata, [:params, :session])
+  defp event_args(:handle_event, metadata), do: Map.take(metadata, [:params, :uri])
+  defp event_args(:handle_params, metadata), do: Map.take(metadata, [:params, :uri])
 
   # Make assigns JSON serializable
   def safe_assigns(assigns) do
