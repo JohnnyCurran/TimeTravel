@@ -9,7 +9,7 @@ defmodule TimeTravel do
         Unable to retrieve :endpoint from config. Make sure you have specified "config :time_travel, :endpoint, YourAppWeb.Endpoint" inside of config/config.exs
         """
 
-      endpoint ->
+      {:ok, endpoint} ->
         endpoint
     end
   end
