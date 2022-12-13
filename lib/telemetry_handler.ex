@@ -6,6 +6,9 @@ defmodule TimeTravel.TelemetryHandler do
       |> Enum.map(&String.replace(&1, "_", " "))
       |> Enum.map_join(" ", &String.capitalize/1)
 
+    safe_assigns = safe_assigns(metadata.socket.assigns)
+    dbg()
+
     {:ok, clean_assigns} =
       metadata.socket.assigns
       |> safe_assigns()
@@ -47,83 +50,28 @@ defmodule TimeTravel.TelemetryHandler do
   defp event_args(:handle_params, metadata), do: Map.take(metadata, [:params, :uri])
 
   # Make assigns JSON serializable
-  def safe_assigns(assigns) do
-    Enum.reduce(assigns, %{}, fn
-      {_key, %Ecto.Association.NotLoaded{}}, acc ->
-        acc
-
-      {key, %DateTime{} = v}, acc ->
-        Map.put(acc, key, DateTime.to_iso8601(v))
-
-      {key, %Date{} = v}, acc ->
-        Map.put(acc, key, Date.to_iso8601(v))
-
-      {key, value}, acc when is_struct(value) ->
-        clean_struct =
-          value
-          |> Map.delete(:__meta__)
-          |> Map.from_struct()
-
-        Map.put(acc, key, safe_assigns(clean_struct))
-
-      {key, value}, acc when is_function(value) ->
-        Map.put(acc, key, inspect(value))
-
-      {key, value}, acc when is_map(value) ->
-        Map.put(acc, key, safe_assigns(value))
-
-      {key, value}, acc when is_list(value) ->
-        Map.put(acc, key, Enum.map(value, &safe_assign/1))
-
-      {key, value}, acc when is_tuple(value) ->
-        Map.put(acc, key, safe_assigns(Tuple.to_list(value)))
-
-      {_key, value}, acc when is_pid(value) ->
-        acc
-
-      {key, value}, acc ->
-        Map.put(acc, key, value)
-
-      %DateTime{} = v, _acc ->
-        DateTime.to_iso8601(v)
-
-      %Date{} = v, _acc ->
-        Date.to_iso8601(v)
-
-      v, _acc when is_struct(v) ->
-        v |> Map.delete(:__meta__) |> Map.from_struct() |> safe_assigns()
-
-      v, _acc when is_function(v) ->
-        inspect(v)
-
-      v, _acc when is_map(v) ->
-        safe_assigns(v)
-
-      v, _acc when is_tuple(v) ->
-        v |> Tuple.to_list() |> safe_assigns()
-
-      v, acc when is_pid(v) ->
-        acc
-
-      v, _acc ->
-        IO.inspect(v, label: "Got the blank handler")
-        v
-    end)
+  def safe_assigns(assigns) when is_map(assigns) do
+    Enum.reduce(assigns, %{}, fn {k, v}, acc -> Map.put(acc, k, safe_assign(v)) end)
   end
 
-  # This is for when we have a list of something
+  def safe_assigns(assigns) when is_list(assigns) do
+    Enum.map(assigns, &safe_assign/1)
+  end
+
+  def safe_assign(%Ecto.Association.NotLoaded{} = v), do: inspect(v)
   def safe_assign(%DateTime{} = v), do: DateTime.to_iso8601(v)
   def safe_assign(%Date{} = v), do: Date.to_iso8601(v)
   def safe_assign(v) when is_function(v), do: inspect(v)
-  def safe_assign(v) when is_map(v), do: safe_assigns(v)
   def safe_assign(v) when is_tuple(v), do: v |> Tuple.to_list() |> safe_assigns()
   def safe_assign(v) when is_pid(v), do: inspect(v)
-
   def safe_assign(v) when is_struct(v) do
     v
     |> Map.delete(:__meta__)
     |> Map.from_struct()
+    |> safe_assigns()
   end
 
+  def safe_assign(v) when is_map(v), do: safe_assigns(v)
+  def safe_assign(v) when is_list(v), do: safe_assigns(v)
   def safe_assign(v), do: v
 end
