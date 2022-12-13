@@ -6,14 +6,6 @@ defmodule TimeTravel.TelemetryHandler do
       |> Enum.map(&String.replace(&1, "_", " "))
       |> Enum.map_join(" ", &String.capitalize/1)
 
-    safe_assigns = safe_assigns(metadata.socket.assigns)
-    dbg()
-
-    {:ok, clean_assigns} =
-      metadata.socket.assigns
-      |> safe_assigns()
-      |> Jason.encode()
-
     # Positive: no negative number keys
     # monotonic: always increasing so the list can be sorted
     time = System.unique_integer([:positive, :monotonic])
@@ -26,6 +18,11 @@ defmodule TimeTravel.TelemetryHandler do
       {:set, metadata.socket.id, time_key, Map.delete(metadata.socket.assigns, :flash)}
     )
 
+    {:ok, clean_assigns} =
+      metadata.socket.assigns
+      |> safe_assigns()
+      |> Jason.encode()
+
     {:ok, event_args} =
       name
       |> Enum.at(2)
@@ -33,10 +30,8 @@ defmodule TimeTravel.TelemetryHandler do
       |> safe_assigns()
       |> Jason.encode()
 
-    endpoint = Application.get_env(:time_travel, :endpoint)
-
     # Send clean assigns to be inspected through the socket
-    endpoint.broadcast("lvdbg:#{metadata.socket.id}", "SaveAssigns", %{
+    TimeTravel.endpoint().broadcast("lvdbg:#{metadata.socket.id}", "SaveAssigns", %{
       payload: clean_assigns,
       time: time,
       event_name: event_name,
@@ -64,6 +59,15 @@ defmodule TimeTravel.TelemetryHandler do
   def safe_assign(v) when is_function(v), do: inspect(v)
   def safe_assign(v) when is_tuple(v), do: v |> Tuple.to_list() |> safe_assigns()
   def safe_assign(v) when is_pid(v), do: inspect(v)
+  def safe_assign(v) when is_bitstring(v), do: inspect(v)
+
+  def safe_assign(v) when is_binary(v) do
+    case String.valid?(v) do
+      true -> v
+      _ -> inspect(v)
+    end
+  end
+
   def safe_assign(v) when is_struct(v) do
     v
     |> Map.delete(:__meta__)

@@ -2,6 +2,18 @@ defmodule TimeTravel do
   @moduledoc """
   Documentation for `TimeTravel`.
   """
+  def endpoint do
+    case Application.fetch_env(:time_travel, :endpoint) do
+      :error ->
+        raise """
+        Unable to retrieve :endpoint from config. Make sure you have specified "config :time_travel, :endpoint, YourAppWeb.Endpoint" inside of config/config.exs
+        """
+
+      endpoint ->
+        endpoint
+    end
+  end
+
   defmacro __using__(_) do
     quote do
       @before_compile TimeTravel
