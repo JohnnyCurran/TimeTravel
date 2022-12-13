@@ -59,7 +59,6 @@ defmodule TimeTravel.TelemetryHandler do
   def safe_assign(v) when is_function(v), do: inspect(v)
   def safe_assign(v) when is_tuple(v), do: v |> Tuple.to_list() |> safe_assigns()
   def safe_assign(v) when is_pid(v), do: inspect(v)
-  def safe_assign(v) when is_bitstring(v), do: inspect(v)
 
   def safe_assign(v) when is_binary(v) do
     case String.valid?(v) do
