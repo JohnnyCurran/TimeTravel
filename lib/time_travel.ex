@@ -2,13 +2,17 @@ defmodule TimeTravel do
   @moduledoc """
   Documentation for `TimeTravel`.
   """
-  defmacro __using__(_) do
+  defmacro __using__(which) when is_atom(which) do
+    apply(__MODULE__, which, [])
+  end
+
+  def live_view do
     quote do
-      @before_compile {TimeTravel, :live_view}
+      @before_compile {TimeTravel, :live_view_before_compile}
     end
   end
 
-  def live_view(__env__) do
+  def live_view_before_compile(__env__) do
     quote do
       def handle_cast({:time_travel, _socket_id, nil}, socket) do
         {:noreply, socket}
