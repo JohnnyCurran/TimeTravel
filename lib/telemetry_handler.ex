@@ -1,5 +1,27 @@
 defmodule TimeTravel.TelemetryHandler do
+  # Available LiveView and LiveComponent Telemetry events
+  @handlers [
+    [:phoenix, :live_view, :mount, :start],
+    [:phoenix, :live_view, :mount, :stop],
+    [:phoenix, :live_view, :handle_params, :start],
+    [:phoenix, :live_view, :handle_params, :stop],
+    [:phoenix, :live_view, :handle_event, :start],
+    [:phoenix, :live_view, :handle_event, :stop],
+    [:phoenix, :live_component, :handle_event, :start],
+    [:phoenix, :live_component, :handle_event, :stop]
+  ]
+
+  # Would be cool to have a map of LV/Component => assigns
+  # In a hierarchy
+  # How would nested LiveComponents work ?
+
+  # Metadata has a "component" and then we can use send_update with a macro-injected update CB?
+  # But how do I get DOM ID :|
   def live_view_event_handler(name, measurement, metadata, context) do
+    IO.inspect(name, label: "Name")
+    IO.inspect(metadata, label: "MT", limit: :infinity, printable_limit: :infinity)
+    IO.inspect(metadata.socket, label: "Socket", limit: :infinity, printable_limit: :infinity)
+
     event_name =
       name
       |> Enum.map(&to_string/1)
@@ -31,7 +53,7 @@ defmodule TimeTravel.TelemetryHandler do
       |> Jason.encode()
 
     # Send clean assigns to be inspected through the socket
-    TimeTravel.endpoint().broadcast("lvdbg:#{metadata.socket.id}", "SaveAssigns", %{
+    metadata.socket.endpoint.broadcast("lvdbg:#{metadata.socket.id}", "SaveAssigns", %{
       payload: clean_assigns,
       time: time,
       event_name: event_name,
