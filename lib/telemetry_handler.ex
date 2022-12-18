@@ -1,12 +1,15 @@
 defmodule TimeTravel.TelemetryHandler do
   # Available LiveView and LiveComponent Telemetry events
-  @handlers [
+  @live_view_events [
     [:phoenix, :live_view, :mount, :start],
     [:phoenix, :live_view, :mount, :stop],
     [:phoenix, :live_view, :handle_params, :start],
     [:phoenix, :live_view, :handle_params, :stop],
     [:phoenix, :live_view, :handle_event, :start],
     [:phoenix, :live_view, :handle_event, :stop],
+  ]
+
+  @live_component_events [
     [:phoenix, :live_component, :handle_event, :start],
     [:phoenix, :live_component, :handle_event, :stop]
   ]
@@ -19,10 +22,15 @@ defmodule TimeTravel.TelemetryHandler do
   # How to get Phoenix ID??
   # LiveView.Channel state has the info I need
   # But then I have to fork live view :|
+  # It _seems_ difficult / impossible to get the state info I need out of the Channel
+  # Is there something I can do with a before compile callback to ensure
+  # my mount/1 LiveComponent call runs before any others?
   def live_view_event_handler(name, measurement, metadata, context) do
     IO.inspect(name, label: "Name")
     IO.inspect(metadata, label: "MT", limit: :infinity, printable_limit: :infinity)
     IO.inspect(metadata.socket, label: "Socket", limit: :infinity, printable_limit: :infinity)
+
+    # IO.inspect metadata.socket.assigns[:id], label: "ID!"
 
     event_name =
       name

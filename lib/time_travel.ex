@@ -23,6 +23,13 @@ defmodule TimeTravel.LiveComponent do
       def update({:time_travel, :get}, socket) do
         send(self(), {:time_travel, :component_get, socket.assigns})
       end
+
+      # Define a catch-all here that merges all assigns
+      # into the socket in order for the telemetry event to get fired
+      # In case the component does not define an update function
+      def update(assigns, socket) do
+        {:ok, assign(socket, assigns)}
+      end
     end
   end
 end
@@ -31,19 +38,19 @@ defmodule TimeTravel do
   @moduledoc """
   Macro callbacks for LiveViews and LiveComponents
   """
-  defmacro __using__(which) when is_atom(which) do
-    apply(__MODULE__, which, [])
-  end
-
   def live_view do
     quote do
-      @before_compile TimeTravel.LiveView #{TimeTravel, :live_view_before_compile}
+      @before_compile TimeTravel.LiveView
     end
   end
 
   def live_component do
     quote do
-      @before_compile TimeTravel.LiveComponent #{TimeTravel, :live_component_before_compile}
+      @before_compile TimeTravel.LiveComponent
     end
+  end
+
+  defmacro __using__(which) when is_atom(which) do
+    apply(__MODULE__, which, [])
   end
 end
