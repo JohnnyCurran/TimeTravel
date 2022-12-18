@@ -16,7 +16,9 @@ defmodule TimeTravel.TelemetryHandler do
   # How would nested LiveComponents work ?
 
   # Metadata has a "component" and then we can use send_update with a macro-injected update CB?
-  # But how do I get DOM ID :|
+  # How to get Phoenix ID??
+  # LiveView.Channel state has the info I need
+  # But then I have to fork live view :|
   def live_view_event_handler(name, measurement, metadata, context) do
     IO.inspect(name, label: "Name")
     IO.inspect(metadata, label: "MT", limit: :infinity, printable_limit: :infinity)
