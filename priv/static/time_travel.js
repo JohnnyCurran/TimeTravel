@@ -48,7 +48,8 @@ var TimeTravel = (() => {
       timeTravelSocket.connect();
       let channel = timeTravelSocket.channel("lvdbg:" + socketId);
       channel.join().receive("ok", ({ messages }) => console.log("catching up", messages)).receive("error", ({ reason }) => console.log("failed join", reason)).receive("timeout", () => console.log("Networking issue. Still waiting..."));
-      channel.on("lv_event", (payload) => {
+      channel.on("SaveAssigns", (payload) => {
+        console.log("SaveAssigns", payload);
         window.dispatchEvent(new CustomEvent("SaveAssigns", { detail: payload }));
       });
       window.addEventListener("RestoreAssigns", (e) => {
