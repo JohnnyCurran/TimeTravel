@@ -24,6 +24,15 @@ defmodule TimeTravel.Jumper do
     {:noreply, put_in(state, [Access.key(socket_id, %{}), Access.key(key, %{})], assigns)}
   end
 
+  def handle_cast({:set, keys_and_assigns}, state) when is_list(keys_and_assigns) do
+    assigns = List.last(keys_and_assigns)
+    keys =
+      keys_and_assigns
+      |> Enum.drop(-1)
+      |> Enum.map(&Access.key(&1, %{}))
+    {:noreply, put_in(state, keys, assigns) |> IO.inspect()}
+  end
+
   def handle_cast(:clear, _state) do
     {:noreply, %{}}
   end
