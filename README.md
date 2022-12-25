@@ -23,7 +23,7 @@ The package can be installed by adding `time_travel` to your list of dependencie
 ```elixir
 def deps do
   [
-    {:time_travel, "~> 0.2"}
+    {:time_travel, "~> 0.3"}
   ]
 end
 ```
@@ -56,13 +56,7 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
 ```
 
-5. Configure TimeTravel to use your Endpoint `config/config.exs`:
-```elixir
-# config/config.exs
-config :time_travel, endpoint: MyAppWeb.Endpoint
-```
-
-6. Attach to the telemetry handlers in the init callback in `lib/your_app_web/telemetry.ex`:
+5. Attach to the telemetry handlers in the init callback in `lib/your_app_web/telemetry.ex`:
 ```elixir
 # telemetry.ex
 # init callback
@@ -72,14 +66,16 @@ config :time_travel, endpoint: MyAppWeb.Endpoint
     [
       [:phoenix, :live_view, :mount, :stop],
       [:phoenix, :live_view, :handle_event, :stop],
-      [:phoenix, :live_view, :handle_params, :stop]
+      [:phoenix, :live_view, :handle_params, :stop],
+      [:phoenix, :live_component, :update, :stop],
+      [:phoenix, :live_component, :handle_event, :stop]
     ],
     &TimeTravel.TelemetryHandler.live_view_event_handler/4,
     %{}
   )
 ```
 
-7. Finally, `use TimeTravel` in the `live_view` definition in `my_app_web.ex`:
+6. Finally, `use TimeTravel` in the `live_view` and `live_component` definitions in `my_app_web.ex`:
 ```elixir
 def live_view do
   quote do
@@ -87,8 +83,17 @@ def live_view do
       layout: {TimeTravelDemoWeb.LayoutView, "live.html"}
 
     # Import TimeTravel handle_cast callbacks for each LiveView
-    use TimeTravel
+    use TimeTravel, :live_view
 
+    # ...
+  end
+end
+
+def live_component do
+  quote do
+    use Phoenix.LiveComponent
+
+    use TimeTravel, :live_component
     # ...
   end
 end
