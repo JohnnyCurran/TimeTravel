@@ -123,6 +123,8 @@ defmodule TimeTravel.TelemetryHandler do
     end
   end
 
+  def safe_assign(v) when is_bitstring(v), do: inspect(v)
+
   def safe_assign(v) when is_struct(v) do
     v
     |> Map.delete(:__meta__)
