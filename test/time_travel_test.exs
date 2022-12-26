@@ -3,6 +3,7 @@ defmodule TimeTravelTest do
   doctest TimeTravel
 
   alias TimeTravel.Jumper
+  alias TimeTravel.TelemetryHandler
 
   test "Set LiveView assigns when :time_travel message received"
 
@@ -51,6 +52,12 @@ defmodule TimeTravelTest do
     test "binary"
     test "struct"
     test "map"
-    test "list"
+
+    test "list" do
+      {:ok, _} =
+        [:some_atom, "some_string", 12345, %{some_key: "some_value"}]
+        |> TelemetryHandler.safe_assigns()
+        |> Jason.encode()
+    end
   end
 end
