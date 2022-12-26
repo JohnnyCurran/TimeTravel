@@ -7,7 +7,7 @@ defmodule TimeTravel.TelemetryHandler do
     [:phoenix, :live_view, :handle_params, :start],
     [:phoenix, :live_view, :handle_params, :stop],
     [:phoenix, :live_view, :handle_event, :start],
-    [:phoenix, :live_view, :handle_event, :stop],
+    [:phoenix, :live_view, :handle_event, :stop]
   ]
 
   @live_component_names [
@@ -46,7 +46,7 @@ defmodule TimeTravel.TelemetryHandler do
   # end
 
   # def live_view_event_handler(name, measurement, %{component: live_component} = metadata, context) do
-    # Logger.info("No id found in assigns for component #{live_component} - Unable to store assigns")
+  # Logger.info("No id found in assigns for component #{live_component} - Unable to store assigns")
   # end
 
   def live_view_event_handler(name, measurement, metadata, context) do

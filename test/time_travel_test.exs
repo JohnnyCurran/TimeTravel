@@ -12,10 +12,11 @@ defmodule TimeTravelTest do
     keys_and_assigns = ["socket_id", "1", %{mykey: :myvalue}]
     Jumper.set(keys_and_assigns)
 
-    assert Jumper.state == %{"socket_id" => %{"1" => %{mykey: :myvalue}}}
+    assert Jumper.state() == %{"socket_id" => %{"1" => %{mykey: :myvalue}}}
   end
 
-  test "Get assigns from Jumper"
+  test "Get assigns from Jumper" do
+  end
 
   test "Clear all Jumper assigns"
 
