@@ -48,7 +48,13 @@ defmodule TimeTravelTest do
 
   describe "safe_assigns/1" do
     test "Nested data structures"
-    test "pid"
+    test "pid" do
+      {:ok, _} =
+        self()
+        |> TelemetryHandler.safe_assign()
+        |> Jason.encode()
+    end
+
     test "bitstring" do
       {:ok, _} =
         %{
@@ -60,7 +66,7 @@ defmodule TimeTravelTest do
     end
 
     test "binary" do
-      {:ok, _} = TelemetryHandler.safe_assigns("I am some binary")
+      {:ok, _} = TelemetryHandler.safe_assign("I am some binary")
                  |> Jason.encode()
     end
 
