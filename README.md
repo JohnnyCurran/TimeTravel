@@ -14,7 +14,7 @@ See the [Time Travel Demo Repo](https://github.com/JohnnyCurran/TimeTravelDemo) 
 
 See a short example video here:
 
-https://user-images.githubusercontent.com/18315178/206929183-2ce45dca-665a-4a3e-bb36-d0862dc0d4c3.mov
+https://user-images.githubusercontent.com/18315178/209589137-0bf0bec3-ebdc-4983-aeb6-7f2e25825ef5.mov
 
 ## Installation
 
