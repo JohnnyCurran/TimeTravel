@@ -11,6 +11,7 @@ var TimeTravel = class {
       window.dispatchEvent(new CustomEvent("SaveAssigns", { detail: payload }));
     });
     window.addEventListener("RestoreAssigns", (e) => {
+      console.log("restore", e.detail);
       channel.push("restore-assigns", { ...e.detail, socketId });
     });
     window.addEventListener("ClearAssigns", (_e) => {

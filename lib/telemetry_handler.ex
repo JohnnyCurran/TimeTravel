@@ -92,7 +92,9 @@ defmodule TimeTravel.TelemetryHandler do
       time: time,
       event_name: event_name,
       event_args: event_args,
-      socket_id: metadata.socket.id
+      socket_id: metadata.socket.id,
+      component: metadata[:component],
+      component_id: metadata.socket.assigns[:id]
     })
   end
 

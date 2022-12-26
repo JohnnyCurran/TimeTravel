@@ -7,6 +7,7 @@ defmodule TimeTravel.LiveView do
 
       def handle_cast({:time_travel, socket_id, assigns}, %{id: id} = socket)
           when id == socket_id do
+            IO.inspect "Recv'd"
         {:noreply, assign(socket, assigns)}
       end
 

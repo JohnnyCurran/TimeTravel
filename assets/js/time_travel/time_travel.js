@@ -16,6 +16,7 @@ export default class TimeTravel {
     });
 
     window.addEventListener('RestoreAssigns', e => {
+      console.log('restore', e.detail);
       channel.push("restore-assigns", {...e.detail, socketId: socketId});
     });
 
