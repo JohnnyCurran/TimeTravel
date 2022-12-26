@@ -12,7 +12,6 @@ defmodule TimeTravel.LiveViewDebugChannel do
   def handle_in("restore-assigns", params, socket) do
     %{"jumperKey" => assigns_key, "socketId" => socket_id, "time" => time_key} = params
     assigns = GenServer.call(TimeTravel.Jumper, {:get, assigns_key, time_key})
-    IO.inspect(assigns, label: "Assigns!")
     Enum.each(live_list(), &GenServer.cast(&1, {:time_travel, socket_id, assigns}))
     {:noreply, socket}
   end

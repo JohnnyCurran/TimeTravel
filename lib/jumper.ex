@@ -20,8 +20,8 @@ defmodule TimeTravel.Jumper do
     GenServer.cast(Jumper, {:set, keys_and_assigns})
   end
 
-  def get do
-    raise "not implemented"
+  def get(socket_id, time_key) do
+    GenServer.call(Jumper, {:get, socket_id, time_key})
   end
 
   def clear do
