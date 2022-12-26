@@ -15,24 +15,32 @@ defmodule TimeTravel.LiveViewDebugChannel do
   # if it's a livecomponent
   def handle_in("restore-assigns", %{"component" => nil} = params, socket) do
     %{"jumperKey" => assigns_key, "socketId" => socket_id, "time" => time_key} = params
-    IO.inspect params, label: "P!"
     assigns = Jumper.get(assigns_key, time_key)
     Enum.each(live_list(), &GenServer.cast(&1, {:time_travel, socket_id, assigns}))
     {:noreply, socket}
   end
 
   def handle_in("restore-assigns", %{"component" => component_string} = params, socket) do
-    %{"jumperKey" => assigns_key, "socketId" => socket_id, "time" => time_key} = params
-    %{assigns: %{id: component_id}} = socket
+    %{
+      "jumperKey" => assigns_key,
+      "socketId" => socket_id,
+      "time" => time_key,
+      "componentPid" => component_pid_string
+    } = params
+
     assigns = Jumper.get(assigns_key, time_key)
     module = Module.concat([component_string])
-    # TODO: How to get pid of current LV? root_pid from socket?
-    Enum.each(live_list(), fn pid ->
-      send_update(pid, module,
-        id: module_id,
-        {:time_travel, :set, 
-    end)
-    send_update(mo
+
+    pid =
+      component_pid_string
+      |> Base.decode64!()
+      |> :erlang.binary_to_term()
+
+    assigns =
+      assigns
+      |> Map.put(:time_travel, true)
+
+    Phoenix.LiveView.send_update(pid, module, assigns)
     {:noreply, socket}
   end
 
