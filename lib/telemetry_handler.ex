@@ -65,9 +65,11 @@ defmodule TimeTravel.TelemetryHandler do
     # Positive: no negative number keys
     # monotonic: always increasing so the list can be sorted
     time = System.unique_integer([:positive, :monotonic])
+
     # Time key is cast to a string separately so that "time" stays an integer in the JSON response
     # and makes the retrieval of indices easier
     time_key = to_string(time)
+
     # Store original assigns in our server
     keys_and_assigns = [metadata.socket.id, time_key, Map.delete(metadata.socket.assigns, :flash)]
     Jumper.set(keys_and_assigns)

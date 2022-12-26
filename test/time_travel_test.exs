@@ -17,7 +17,7 @@ defmodule TimeTravelTest do
 
   test "Get assigns from Jumper" do
     assert Jumper.state() == %{}
-    
+
     keys_and_assigns = ["socket_id", "1", %{mykey: :myvalue}]
     Jumper.set(keys_and_assigns)
 
@@ -46,6 +46,7 @@ defmodule TimeTravelTest do
   test "Clear Jumper assigns when channel receives clear-assigns message"
 
   describe "safe_assigns/1" do
+    test "Nested data structures"
     test "pid"
     test "binary"
     test "struct"
