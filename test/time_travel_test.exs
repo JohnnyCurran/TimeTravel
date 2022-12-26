@@ -47,7 +47,17 @@ defmodule TimeTravelTest do
   test "Clear Jumper assigns when channel receives clear-assigns message"
 
   describe "safe_assigns/1" do
-    test "Nested data structures"
+    test "Nested data structures" do
+      {:ok, _} =
+        %{
+          "key" => %{some_key: :some_value},
+          "pid" => self(),
+          list: ["some_list", 12345]
+        }
+        |> TelemetryHandler.safe_assigns()
+        |> Jason.encode()
+    end
+
     test "pid" do
       {:ok, _} =
         self()
@@ -66,8 +76,9 @@ defmodule TimeTravelTest do
     end
 
     test "binary" do
-      {:ok, _} = TelemetryHandler.safe_assign("I am some binary")
-                 |> Jason.encode()
+      {:ok, _} =
+        TelemetryHandler.safe_assign("I am some binary")
+        |> Jason.encode()
     end
 
     test "struct"
