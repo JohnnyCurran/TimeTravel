@@ -6,7 +6,7 @@ defmodule TimeTravel.MixProject do
   def project do
     [
       app: :time_travel,
-      version: "0.3.0",
+      version: "0.3.2",
       elixir: "~> 1.11",
       description: description(),
       package: package(),
