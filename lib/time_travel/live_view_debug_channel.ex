@@ -1,6 +1,8 @@
 defmodule TimeTravel.LiveViewDebugChannel do
   use Phoenix.Channel
 
+  alias TimeTravel.Jumper
+
   require Logger
 
   def join("lvdbg:" <> liveview_socket_id, _payload, socket) do
@@ -9,15 +11,39 @@ defmodule TimeTravel.LiveViewDebugChannel do
     {:ok, socket}
   end
 
-  def handle_in("restore-assigns", params, socket) do
+  def handle_in("restore-assigns", %{"component" => nil} = params, socket) do
     %{"jumperKey" => assigns_key, "socketId" => socket_id, "time" => time_key} = params
-    assigns = GenServer.call(TimeTravel.Jumper, {:get, assigns_key, time_key})
+    assigns = Jumper.get(assigns_key, time_key)
     Enum.each(live_list(), &GenServer.cast(&1, {:time_travel, socket_id, assigns}))
     {:noreply, socket}
   end
 
+  def handle_in("restore-assigns", %{"component" => component_string} = params, socket) do
+    %{
+      "jumperKey" => assigns_key,
+      "socketId" => socket_id,
+      "time" => time_key,
+      "componentPid" => component_pid_string
+    } = params
+
+    assigns = Jumper.get(assigns_key, time_key)
+    module = Module.concat([component_string])
+
+    pid =
+      component_pid_string
+      |> Base.decode64!()
+      |> :erlang.binary_to_term()
+
+    assigns =
+      assigns
+      |> Map.put(:time_travel, true)
+
+    Phoenix.LiveView.send_update(pid, module, assigns)
+    {:noreply, socket}
+  end
+
   def handle_in("clear-assigns", _params, socket) do
-    TimeTravel.Jumper.clear()
+    Jumper.clear()
     {:noreply, socket}
   end
 
@@ -34,7 +60,7 @@ defmodule TimeTravel.LiveViewDebugChannel do
       }
     )
     |> Enum.filter(fn {_, process} ->
-      process != nil && process != {} &&
+      process && process != {} &&
         elem(process, 0) == Phoenix.LiveView.Channel
     end)
     |> Enum.map(&elem(&1, 0))

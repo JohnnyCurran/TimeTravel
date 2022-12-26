@@ -1,53 +1,23 @@
 defmodule TimeTravel.TelemetryHandler do
+  alias TimeTravel.Jumper
   # Available LiveView and LiveComponent Telemetry events
-  @live_view_names [
+  _live_view_names = [
     [:phoenix, :live_view, :mount, :start],
     [:phoenix, :live_view, :mount, :stop],
     [:phoenix, :live_view, :handle_params, :start],
     [:phoenix, :live_view, :handle_params, :stop],
     [:phoenix, :live_view, :handle_event, :start],
-    [:phoenix, :live_view, :handle_event, :stop],
+    [:phoenix, :live_view, :handle_event, :stop]
   ]
 
-  @live_component_names [
+  _live_component_names = [
     [:phoenix, :live_component, :handle_event, :start],
     [:phoenix, :live_component, :handle_event, :stop]
   ]
 
   require Logger
 
-  # Would be cool to have a map of LV/Component => assigns
-  # In a hierarchy
-  # How would nested LiveComponents work ?
-  # Maybe a flat map for now will have to suffice
-  # Possibly component => cid mapping ?
-  # def live_view_event_handler(name, measurement, %{socket: %{assigns: %{id: id}}} = metadata, context) when name in @live_component_names do
-  #   %{component: module, socket: %{id: socket_id, assigns: %{myself: %{cid: cid}} = assigns}} = metadata
-  #   IO.inspect metadata
-
-  #   time = System.unique_integer([:positive, :monotonic])
-  #   # Time key is cast to a string separately so that "time" stays an integer in the JSON response
-  #   # and makes the retrieval of indices easier
-  #   time_key = to_string(time)
-  #   keys_and_assigns = [socket_id, time_key, module, cid, Map.delete(assigns, :flash)]
-  #   GenServer.cast(
-  #     TimeTravel.Jumper,
-  #     {:set, keys_and_assigns}
-  #   )
-  # end
-
-  # def live_view_event_handler(name, measurement, metadata, context) when name in @live_component_names do
-  #   %{component: module} = metadata
-  #   Logger.warning("No :id assign found in #{module} LiveComponent socket assigns")
-  # end
-
   def live_view_event_handler(name, measurement, metadata, context) do
-    IO.inspect(name, label: "Name")
-    IO.inspect(metadata, label: "MT", limit: :infinity, printable_limit: :infinity)
-    IO.inspect(metadata.socket, label: "Socket", limit: :infinity, printable_limit: :infinity)
-
-    IO.inspect metadata.socket.assigns[:id], label: "ID!"
-
     event_name =
       name
       |> Enum.map(&to_string/1)
@@ -57,14 +27,14 @@ defmodule TimeTravel.TelemetryHandler do
     # Positive: no negative number keys
     # monotonic: always increasing so the list can be sorted
     time = System.unique_integer([:positive, :monotonic])
+
     # Time key is cast to a string separately so that "time" stays an integer in the JSON response
     # and makes the retrieval of indices easier
     time_key = to_string(time)
+
     # Store original assigns in our server
-    GenServer.cast(
-      TimeTravel.Jumper,
-      {:set, metadata.socket.id, time_key, Map.delete(metadata.socket.assigns, :flash)}
-    )
+    keys_and_assigns = [metadata.socket.id, time_key, Map.delete(metadata.socket.assigns, :flash)]
+    Jumper.set(keys_and_assigns)
 
     {:ok, clean_assigns} =
       metadata.socket.assigns
@@ -84,7 +54,9 @@ defmodule TimeTravel.TelemetryHandler do
       time: time,
       event_name: event_name,
       event_args: event_args,
-      socket_id: metadata.socket.id
+      socket_id: metadata.socket.id,
+      component: metadata[:component],
+      component_pid: Base.encode64(:erlang.term_to_binary(metadata.socket.root_pid))
     })
   end
 
@@ -114,6 +86,8 @@ defmodule TimeTravel.TelemetryHandler do
       _ -> inspect(v)
     end
   end
+
+  def safe_assign(v) when is_bitstring(v), do: inspect(v)
 
   def safe_assign(v) when is_struct(v) do
     v

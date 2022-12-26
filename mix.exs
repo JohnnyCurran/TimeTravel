@@ -48,7 +48,8 @@ defmodule TimeTravel.MixProject do
       {:esbuild, "~> 0.5", only: :dev},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:jason, "~> 1.0"},
-      {:phoenix, "~> 1.6"}
+      {:phoenix, "~> 1.6"},
+      {:phoenix_live_view, "~> 0.17"}
     ]
   end
 

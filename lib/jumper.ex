@@ -1,6 +1,8 @@
 defmodule TimeTravel.Jumper do
   use GenServer
 
+  alias __MODULE__
+
   def start_link(_) do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
@@ -8,6 +10,22 @@ defmodule TimeTravel.Jumper do
   @impl true
   def init(_) do
     {:ok, %{}}
+  end
+
+  def state do
+    GenServer.call(TimeTravel.Jumper, :show_state)
+  end
+
+  def set(keys_and_assigns) when is_list(keys_and_assigns) do
+    GenServer.cast(Jumper, {:set, keys_and_assigns})
+  end
+
+  def get(socket_id, time_key) do
+    GenServer.call(Jumper, {:get, socket_id, time_key})
+  end
+
+  def clear do
+    GenServer.cast(TimeTravel.Jumper, :clear)
   end
 
   @impl true
@@ -20,28 +38,18 @@ defmodule TimeTravel.Jumper do
   end
 
   @impl true
-  def handle_cast({:set, socket_id, key, assigns}, state) do
-    {:noreply, put_in(state, [Access.key(socket_id, %{}), Access.key(key, %{})], assigns)}
-  end
-
   def handle_cast({:set, keys_and_assigns}, state) when is_list(keys_and_assigns) do
     assigns = List.last(keys_and_assigns)
+
     keys =
       keys_and_assigns
       |> Enum.drop(-1)
       |> Enum.map(&Access.key(&1, %{}))
-    {:noreply, put_in(state, keys, assigns) |> IO.inspect()}
+
+    {:noreply, put_in(state, keys, assigns)}
   end
 
   def handle_cast(:clear, _state) do
     {:noreply, %{}}
-  end
-
-  def show do
-    GenServer.call(TimeTravel.Jumper, :show_state)
-  end
-
-  def clear do
-    GenServer.cast(TimeTravel.Jumper, :clear)
   end
 end

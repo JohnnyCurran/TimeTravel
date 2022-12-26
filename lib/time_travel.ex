@@ -7,6 +7,7 @@ defmodule TimeTravel.LiveView do
 
       def handle_cast({:time_travel, socket_id, assigns}, %{id: id} = socket)
           when id == socket_id do
+        IO.inspect("Recv'd")
         {:noreply, assign(socket, assigns)}
       end
 
@@ -20,6 +21,10 @@ end
 defmodule TimeTravel.LiveComponent do
   defmacro __before_compile__(_env) do
     quote do
+      def update(%{time_travel: true} = assigns, socket) do
+        {:ok, assign(socket, Map.delete(assigns, :time_travel))}
+      end
+
       # Define a catch-all here that merges all assigns
       # into the socket in order for the telemetry event to get fired
       # In case the component does not define an update function
