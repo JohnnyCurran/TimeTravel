@@ -26,7 +26,18 @@ defmodule TimeTravelTest do
     assert Jumper.get("socket_id", "1") == %{mykey: :myvalue}
   end
 
-  test "Clear all Jumper assigns"
+  test "Clear all Jumper assigns" do
+    assert Jumper.state() == %{}
+
+    keys_and_assigns = ["socket_id", "1", %{mykey: :myvalue}]
+    Jumper.set(keys_and_assigns)
+
+    assert Jumper.state() == %{"socket_id" => %{"1" => %{mykey: :myvalue}}}
+
+    Jumper.clear()
+
+    assert Jumper.state() == %{}
+  end
 
   test "Broadcast lvdbg message when telemetry event received"
 
