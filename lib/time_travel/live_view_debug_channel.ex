@@ -11,8 +11,6 @@ defmodule TimeTravel.LiveViewDebugChannel do
     {:ok, socket}
   end
 
-  # Want to do a send_update on restore-assigns instead of genserver cast
-  # if it's a livecomponent
   def handle_in("restore-assigns", %{"component" => nil} = params, socket) do
     %{"jumperKey" => assigns_key, "socketId" => socket_id, "time" => time_key} = params
     assigns = Jumper.get(assigns_key, time_key)
