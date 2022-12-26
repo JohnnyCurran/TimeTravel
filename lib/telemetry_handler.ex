@@ -1,4 +1,5 @@
 defmodule TimeTravel.TelemetryHandler do
+  alias TimeTravel.Jumper
   # Available LiveView and LiveComponent Telemetry events
   @live_view_names [
     [:phoenix, :live_view, :mount, :start],
@@ -41,12 +42,19 @@ defmodule TimeTravel.TelemetryHandler do
   #   Logger.warning("No :id assign found in #{module} LiveComponent socket assigns")
   # end
 
-  def live_view_event_handler(name, measurement, metadata, context) do
-    IO.inspect(name, label: "Name")
-    IO.inspect(metadata, label: "MT", limit: :infinity, printable_limit: :infinity)
-    IO.inspect(metadata.socket, label: "Socket", limit: :infinity, printable_limit: :infinity)
+  # def live_view_event_handler(name, measurement, %{component: live_component, socket: %{assigns: %{id: id}}} = metadata, context) do
+  # end
 
-    IO.inspect metadata.socket.assigns[:id], label: "ID!"
+  # def live_view_event_handler(name, measurement, %{component: live_component} = metadata, context) do
+    # Logger.info("No id found in assigns for component #{live_component} - Unable to store assigns")
+  # end
+
+  def live_view_event_handler(name, measurement, metadata, context) do
+    # IO.inspect(name, label: "Name")
+    IO.inspect(metadata, label: "MT", limit: :infinity, printable_limit: :infinity)
+    # IO.inspect(metadata.socket, label: "Socket", limit: :infinity, printable_limit: :infinity)
+
+    # IO.inspect metadata.socket.assigns[:id], label: "ID!"
 
     event_name =
       name
@@ -61,10 +69,8 @@ defmodule TimeTravel.TelemetryHandler do
     # and makes the retrieval of indices easier
     time_key = to_string(time)
     # Store original assigns in our server
-    GenServer.cast(
-      TimeTravel.Jumper,
-      {:set, metadata.socket.id, time_key, Map.delete(metadata.socket.assigns, :flash)}
-    )
+    keys_and_assigns = [metadata.socket.id, time_key, Map.delete(metadata.socket.assigns, :flash)]
+    Jumper.set(keys_and_assigns)
 
     {:ok, clean_assigns} =
       metadata.socket.assigns

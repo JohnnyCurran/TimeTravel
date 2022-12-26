@@ -1,6 +1,8 @@
 defmodule TimeTravel.Jumper do
   use GenServer
 
+  alias __MODULE__
+
   def start_link(_) do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
@@ -8,6 +10,22 @@ defmodule TimeTravel.Jumper do
   @impl true
   def init(_) do
     {:ok, %{}}
+  end
+
+  def state do
+    GenServer.call(TimeTravel.Jumper, :show_state)
+  end
+
+  def set(keys_and_assigns) when is_list(keys_and_assigns) do
+    GenServer.cast(Jumper, {:set, keys_and_assigns})
+  end
+
+  def get do
+    raise "not implemented"
+  end
+
+  def clear do
+    GenServer.cast(TimeTravel.Jumper, :clear)
   end
 
   @impl true
@@ -35,13 +53,5 @@ defmodule TimeTravel.Jumper do
 
   def handle_cast(:clear, _state) do
     {:noreply, %{}}
-  end
-
-  def show do
-    GenServer.call(TimeTravel.Jumper, :show_state)
-  end
-
-  def clear do
-    GenServer.cast(TimeTravel.Jumper, :clear)
   end
 end
